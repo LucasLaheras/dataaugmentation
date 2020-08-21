@@ -108,9 +108,14 @@ if __name__ == '__main__':
 
     # Control Points 2D using TSNE Algorithm
     X_nd = np.reshape(img_test_encoded, (img_test_encoded.shape[0], int(np.prod(img_test_encoded.shape) / img_test_encoded.shape[0])))
-    number_of_control_points = int(img_test_encoded.shape[0] / 3)
+    # Adding label
+    X_nd = np.transpose(X_nd)
+    X_nd = np.append(X_nd, [classify_train], axis=0)
+    X_nd = np.transpose(X_nd)
 
-    control_points_id, x_nd_removed = greater_euclidean_distances(X_nd, number_of_control_points)
+    number_of_control_points = 10
+
+    control_points_id, x_nd_removed = greater_euclidean_distances(X_nd, number_of_control_points, 30)
     number_of_control_points = control_points_id.shape[0]
     print(number_of_control_points)
     #control_points_id = np.random.randint(0, high=X_nd.shape[0], size=(number_of_control_points,))
@@ -121,7 +126,6 @@ if __name__ == '__main__':
     # Lamp Algorithm
     lamp_proj = Lamp(Xdata=X_nd, control_points=ctp_proj, label=True, scale=True)
     X_proj = lamp_proj.fit()
-
 
     # Format data
     points1 = np.transpose([X_proj[:, 0], X_proj[:, 1], X_proj[:, -1]])
@@ -179,6 +183,8 @@ if __name__ == '__main__':
 
     # Format data
     new_points_nd = np.asarray(new_points_nd)
+    classification_new_points = new_points_nd[:][-1]
+    new_points_nd = np.delete(new_points_nd, -1, 1)
     print(new_points_nd.shape)
     deco_new_points = np.reshape(new_points_nd, (new_points_nd.shape[0], img_test_encoded.shape[1], img_test_encoded.shape[2], img_test_encoded.shape[3]))
     # deco_new_points = np.reshape(new_points_nd, (new_points_nd.shape[0], 4, 4, 8))
